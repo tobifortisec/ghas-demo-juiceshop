@@ -191,6 +191,22 @@ export const appendUserId = () => {
   }
 }
 
+// POST /api/Feedbacks is intentionally open to anonymous users, so unlike
+// appendUserId this variant does not reject them: it enforces ownership by
+// overwriting UserId with the authenticated user's id, or null for anonymous
+// submissions (Feedback.UserId is nullable).
+export const appendUserIdAllowAnonymous = () => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = authenticatedUsers.from(req)
+    if (user?.data?.id !== undefined) {
+      req.body.UserId = user.data.id
+    } else {
+      req.body.UserId = null
+    }
+    next()
+  }
+}
+
 export const updateAuthenticatedUsers = () => (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies.token || utils.jwtFrom(req)
   if (token) {
