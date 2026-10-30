@@ -364,6 +364,8 @@ restoreOverwrittenFilesWithOriginals().then(() => {
   app.use('/rest/basket/:id/order', security.isAuthorized())
   /* Challenge evaluation before finale takes over */ // vuln-code-snippet hide-start
   app.post('/api/Feedbacks', verify.forgedFeedbackChallenge())
+  /* Enforce ownership: authenticated users may only attribute feedback to themselves, anonymous users get no owner */
+  app.post('/api/Feedbacks', security.appendUserIdAllowAnonymous())
   /* Captcha verification before finale takes over */
   app.post('/api/Feedbacks', captcha.verifyCaptcha())
   /* Captcha Bypass challenge verification */
